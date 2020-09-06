@@ -1,0 +1,438 @@
+# MTK project .rc configure
+
+import init.mt6795.usb.rc
+
+on init
+    mkdir /mnt/media_rw/usbotg 0700 media_rw media_rw
+    mkdir /storage/usbotg 0700 root root 
+
+on fs
+    write /proc/bootprof "start mobicore(on fs)"
+    mkdir /data/app/mcRegistry 0775 system system
+    mkdir /data/app/mcRegistry/TbStorage 0770 system system
+    chmod 0600 /dev/mobicore
+    chown system system /dev/mobicore
+    chmod 0666 /dev/mobicore-user
+    chown system system /dev/mobicore-user
+
+    #MobiCore Daemon Patchs
+    export MC_AUTH_TOKEN_PATH /efs
+    start mobicore
+    write /proc/bootprof "start mobicore end(on fs)"
+    
+on post-fs-data
+
+# Change permissions for accdet calibration
+    chown system system /sys/class/meizu/accdet_calibration/cmd
+    chown system system /sys/class/meizu/accdet_calibration/data
+    chown system system /sys/class/meizu/accdet_calibration/state
+
+#
+# Connectivity related device nodes & configuration (begin)
+#
+
+#/dev/ttyMT2 for Connectivity BT/FM/GPS usage
+    chmod 0660 /dev/ttyMT2
+    chown system system /dev/ttyMT2
+
+
+# STP, WMT, GPS, FM and BT Driver
+#   insmod /system/lib/modules/mtk_hif_sdio.ko
+#   insmod /system/lib/modules/mtk_stp_wmt.ko
+#   insmod /system/lib/modules/mtk_stp_uart.ko
+#   insmod /system/lib/modules/mtk_stp_gps.ko
+#   insmod /system/lib/modules/mtk_stp_bt.ko
+#   insmod /system/lib/modules/mtk_fm_drv.ko
+#   insmod /system/lib/modules/mtk_wmt_wifi.ko
+
+#SMB
+    chown system system /proc/smb/ScreenComm
+    chmod 0660 /proc/smb/ScreenComm
+    
+# Create char device file for WMT, GPS, BT, FM, WIFI
+#    mknod /dev/stpwmt c 190 0;
+#    mknod /dev/stpgps c 191 0;
+#    mknod /dev/stpbt  c 192 0;
+
+#    chmod 0660 /dev/stpwmt
+#    chown system system /dev/stpwmt
+    
+#    chmod 0660 /dev/wmtdetect
+#    chown system system /dev/wmtdetect
+ 		
+    mknod /dev/wmtWifi c 153 0
+    chmod 0660 /dev/wmtWifi
+    chown system system /dev/wmtWifi
+#Camera
+    chmod 0660 /dev/GAF001AF
+    chown system camera /dev/GAF001AF
+   
+    chmod 0660 /dev/DW9714AF
+    chown system camera /dev/DW9714AF
+    
+    chmod 0660 /dev/AD5820AF
+    chown system camera /dev/AD5820AF
+    
+    chmod 0660 /dev/BU64745GWZAF
+    chown system camera /dev/BU64745GWZAF
+    
+    chmod 0660 /dev/LC898212AF
+    chown system camera /dev/LC898212AF
+
+    chmod 0660 /dev/LC898122AF
+    chown system camera /dev/LC898122AF
+
+    chmod 0660 /dev/stmvl6180
+    chown system camera /dev/stmvl6180 
+
+# BT
+#    chmod 0660 /dev/stpbt
+#    chown bluetooth radio /dev/stpbt
+
+# GPS
+#    chown gps gps /dev/stpgps
+    chown gps gps /sys/class/gpsdrv/gps/pwrctl
+    chown gps gps /sys/class/gpsdrv/gps/suspend
+    chown gps gps /sys/class/gpsdrv/gps/state
+    chown gps gps /sys/class/gpsdrv/gps/pwrsave
+    chown gps gps /sys/class/gpsdrv/gps/status
+#    chmod 0660 /dev/stpgps
+
+# WiFi
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wpa_supplicant 0770 wifi wifi 
+    chown wifi wifi /data/misc/wifi
+
+# ANT
+	chmod 0660 /dev/stpant
+	chown ant radio /dev/stpant
+
+#Disable for one Single loader
+# Load WiFi Driver
+#   insmod /system/lib/modules/wlan_mt.ko
+
+# Char device for BT 3.0 HS
+    mknod /dev/ampc0 c 151 0
+    chown bluetooth bluetooth /dev/ampc0
+    chmod 0660 /dev/ampc0
+
+# FPC
+    chmod 0666 /dev/fpc1020
+    chown system system /dev/fpc1020
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_mode
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_count
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_settings_mux
+    chown system system /sys/class/meizu/mx_fpc/setup/adc_gain
+    chown system system /sys/class/meizu/mx_fpc/setup/adc_shift
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_col_groups
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_col_start
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_row_count
+    chown system system /sys/class/meizu/mx_fpc/setup/capture_row_start
+    chown system system /sys/class/meizu/mx_fpc/setup/pxl_ctrl
+    chown system system /sys/class/meizu/mx_fpc/diag/mode
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_mode
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_count
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_settings_mux
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/adc_gain
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/adc_shift
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_col_groups
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_col_start
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_row_count
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/capture_row_start
+    chmod 0660 /sys/class/meizu/mx_fpc/setup/pxl_ctrl
+    chmod 0660 /sys/class/meizu/mx_fpc/diag/mode
+
+#LED
+    chown system system /sys/class/leds/mx-led/brightness
+    chown system system /sys/class/leds/mx-led/blink
+    chmod 0660 /sys/class/leds/mx-led/brightness
+    chmod 0660 /sys/class/leds/mx-led/blink
+
+#
+# Connectivity related device nodes & configuration (end)
+#
+
+# Encrypt phone function
+    setprop vold.post_fs_data_done 1
+
+on init
+    # Refer to http://source.android.com/devices/tech/storage/index.html
+    # It said, "Starting in Android 4.4, multiple external storage devices are surfaced to developers through 
+    #           Context.getExternalFilesDirs(), Context.getExternalCacheDirs(), and Context.getObbDirs().
+    #           External storage devices surfaced through these APIs must be a semi-permanent part of the device (such as an SD card slot in a battery compartment).
+    #           Developers expect data stored in these locations to be available over long periods of time."
+    # Therefore, if the target doesn't support sd hot-plugging (Ex: the SD card slot in a battery compartment), we need to export SECONDARY_STORAGE in 'boot' section
+    # 
+    # export SECONDARY_STORAGE /storage/sdcard1
+
+service fuse_usbotg /system/bin/sdcard -u 1023 -g 1023 -w 1023 -d /mnt/media_rw/usbotg /storage/usbotg
+    class late_start
+    disabled
+
+# FLYME_BEGIN
+# FUNCTION:protect files. writed by chenwenjun
+service sdcard /system/bin/sdcard -u 1023 -g 1023 -l /data/media /mnt/shell/emulated .@meizu_protbox@ 1000
+    class late_start
+    socket sdcard stream 0660 media_rw system
+# FLYME_END 2015.05.12
+
+#
+# Connectivity related services (Begin)
+#
+
+service wmt_loader /system/bin/wmt_loader
+	class core
+	user root
+	group root
+	oneshot
+
+service 66xx_launcher /system/bin/6620_launcher -m 4 -p /system/etc/firmware/
+    user system
+    group system
+    class core
+
+on property:persist.mtk.combo.coredump=yes
+    service stp_dump /system/bin/stp_dump3
+    user root
+     group root
+     class core
+
+
+
+
+# 
+# for m85 sensor icm20645
+#
+on post-fs-data
+	chown system system /dev/iio:device0
+	chown system system /sys/bus/iio/devices/iio:device0/buffer
+	chown system system /sys/bus/iio/devices/iio:device0/buffer/enable
+	chown system system /sys/bus/iio/devices/iio:device0/buffer/length
+	chown system system /sys/bus/iio/devices/iio:device0/debug_mem_read
+	chown system system /sys/bus/iio/devices/iio:device0/debug_mem_write
+	chown system system /sys/bus/iio/devices/iio:device0/debug_reg_dump
+	chown system system /sys/bus/iio/devices/iio:device0/dev
+	chown system system /sys/bus/iio/devices/iio:device0/event_pedometer_enable
+	chown system system /sys/bus/iio/devices/iio:device0/event_pick_up_enable
+	chown system system /sys/bus/iio/devices/iio:device0/event_smd_enable
+	chown system system /sys/bus/iio/devices/iio:device0/event_tilt_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_6quat_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_6quat_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_scale
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_wake_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_wake_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_x_offset
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_x_st_calibbias
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_y_offset
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_y_st_calibbias
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_z_offset
+	chown system system /sys/bus/iio/devices/iio:device0/in_accel_z_st_calibbias
+	chown system system /sys/bus/iio/devices/iio:device0/in_activity_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_scale
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_wake_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_wake_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_x_offset
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_x_st_calibbias
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_y_offset
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_y_st_calibbias
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_z_offset
+	chown system system /sys/bus/iio/devices/iio:device0/in_anglvel_z_st_calibbias
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_scale
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_sensitivity_x
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_sensitivity_y
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_sensitivity_z
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_wake_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_magn_wake_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_p6quat_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_p6quat_rate
+	chown system system /sys/bus/iio/devices/iio:device0/in_sc_auth
+	chown system system /sys/bus/iio/devices/iio:device0/in_step_counter_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_step_counter_wake_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_step_detector_enable
+	chown system system /sys/bus/iio/devices/iio:device0/in_step_detector_wake_enable
+	chown system system /sys/bus/iio/devices/iio:device0/info_accel_matrix
+	chown system system /sys/bus/iio/devices/iio:device0/info_anglvel_matrix
+	chown system system /sys/bus/iio/devices/iio:device0/info_firmware_loaded
+	chown system system /sys/bus/iio/devices/iio:device0/info_gyro_sf
+	chown system system /sys/bus/iio/devices/iio:device0/info_magn_matrix
+	chown system system /sys/bus/iio/devices/iio:device0/info_secondary_name
+	chown system system /sys/bus/iio/devices/iio:device0/misc_batchmode_timeout
+	chown system system /sys/bus/iio/devices/iio:device0/misc_bin_dmp_firmware
+	chown system system /sys/bus/iio/devices/iio:device0/misc_flush_batch
+	chown system system /sys/bus/iio/devices/iio:device0/misc_self_test
+	chown system system /sys/bus/iio/devices/iio:device0/name
+	chown system system /sys/bus/iio/devices/iio:device0/out_pedometer_counter
+	chown system system /sys/bus/iio/devices/iio:device0/out_pedometer_steps
+	chown system system /sys/bus/iio/devices/iio:device0/out_pedometer_time
+	chown system system /sys/bus/iio/devices/iio:device0/out_temperature
+	chown system system /sys/bus/iio/devices/iio:device0/params_pedometer_int_on
+	chown system system /sys/bus/iio/devices/iio:device0/poll_activity
+	chown system system /sys/bus/iio/devices/iio:device0/poll_pedometer
+	chown system system /sys/bus/iio/devices/iio:device0/poll_pick_up
+	chown system system /sys/bus/iio/devices/iio:device0/poll_smd
+	chown system system /sys/bus/iio/devices/iio:device0/poll_tilt
+	chown system system /sys/bus/iio/devices/iio:device0/power
+	chown system system /sys/bus/iio/devices/iio:device0/scan_elements
+	chown system system /sys/bus/iio/devices/iio:device0/s scan_elements/in_timestamp_en
+	chown system system /sys/bus/iio/devices/iio:device0/s scan_elements/in_timestamp_index
+	chown system system /sys/bus/iio/devices/iio:device0/s scan_elements/in_timestamp_type
+	chown system system /sys/bus/iio/devices/iio:device0/subsystem
+	chown system system /sys/bus/iio/devices/iio:device0/uevent
+	chown system system /sys/bus/iio/devices/iio:device0/irq_state
+	
+	chown system system /sys/class/meizu/acc/acc_self_test
+	chown system system /sys/class/meizu/acc/acc_x_calibbias
+	chown system system /sys/class/meizu/acc/acc_y_calibbias
+	chown system system /sys/class/meizu/acc/acc_z_calibbias
+	chown system system /sys/class/meizu/acc/acc_x_offset
+	chown system system /sys/class/meizu/acc/acc_y_offset
+	chown system system /sys/class/meizu/acc/acc_z_offset
+
+	chmod 0770 /dev/iio:device0
+	chmod 0770 /sys/bus/iio/devices/iio:device0/buffer
+	chmod 0660 /sys/bus/iio/devices/iio:device0/buffer/enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/buffer/length
+	chmod 0660 /sys/bus/iio/devices/iio:device0/debug_mem_read
+	chmod 0660 /sys/bus/iio/devices/iio:device0/debug_mem_write
+	chmod 0660 /sys/bus/iio/devices/iio:device0/debug_reg_dump
+	chmod 0660 /sys/bus/iio/devices/iio:device0/dev
+	chmod 0660 /sys/bus/iio/devices/iio:device0/event_pedometer_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/event_pick_up_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/event_smd_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/event_tilt_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_6quat_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_6quat_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_scale
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_wake_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_wake_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_x_offset
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_x_st_calibbias
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_y_offset
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_y_st_calibbias
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_z_offset
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_accel_z_st_calibbias
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_activity_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_scale
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_wake_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_wake_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_x_offset
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_x_st_calibbias
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_y_offset
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_y_st_calibbias
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_z_offset
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_anglvel_z_st_calibbias
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_scale
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_sensitivity_x
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_sensitivity_y
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_sensitivity_z
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_wake_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_magn_wake_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_p6quat_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_p6quat_rate
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_sc_auth
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_step_counter_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_step_counter_wake_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_step_detector_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/in_step_detector_wake_enable
+	chmod 0660 /sys/bus/iio/devices/iio:device0/info_accel_matrix
+	chmod 0660 /sys/bus/iio/devices/iio:device0/info_anglvel_matrix
+	chmod 0660 /sys/bus/iio/devices/iio:device0/info_firmware_loaded
+	chmod 0660 /sys/bus/iio/devices/iio:device0/info_gyro_sf
+	chmod 0660 /sys/bus/iio/devices/iio:device0/info_magn_matrix
+	chmod 0660 /sys/bus/iio/devices/iio:device0/info_secondary_name
+	chmod 0660 /sys/bus/iio/devices/iio:device0/misc_batchmode_timeout
+	chmod 0660 /sys/bus/iio/devices/iio:device0/misc_bin_dmp_firmware
+	chmod 0660 /sys/bus/iio/devices/iio:device0/misc_flush_batch
+	chmod 0660 /sys/bus/iio/devices/iio:device0/misc_self_test
+	chmod 0660 /sys/bus/iio/devices/iio:device0/name
+	chmod 0660 /sys/bus/iio/devices/iio:device0/out_pedometer_counter
+	chmod 0660 /sys/bus/iio/devices/iio:device0/out_pedometer_steps
+	chmod 0660 /sys/bus/iio/devices/iio:device0/out_pedometer_time
+	chmod 0660 /sys/bus/iio/devices/iio:device0/out_temperature
+	chmod 0660 /sys/bus/iio/devices/iio:device0/params_pedometer_int_on
+	chmod 0660 /sys/bus/iio/devices/iio:device0/poll_activity
+	chmod 0660 /sys/bus/iio/devices/iio:device0/poll_pedometer
+	chmod 0660 /sys/bus/iio/devices/iio:device0/poll_pick_up
+	chmod 0660 /sys/bus/iio/devices/iio:device0/poll_smd
+	chmod 0660 /sys/bus/iio/devices/iio:device0/poll_tilt
+	chmod 0770 /sys/bus/iio/devices/iio:device0/power
+	chmod 0770 /sys/bus/iio/devices/iio:device0/scan_elements
+	chmod 0660 /sys/bus/iio/devices/iio:device0/s scan_elements/in_timestamp_en
+	chmod 0660 /sys/bus/iio/devices/iio:device0/s scan_elements/in_timestamp_index
+	chmod 0660 /sys/bus/iio/devices/iio:device0/s scan_elements/in_timestamp_type
+	chmod 0770 /sys/bus/iio/devices/iio:device0/subsystem
+	chmod 0770 /sys/bus/iio/devices/iio:device0/uevent
+	chmod 0660 /sys/bus/iio/devices/iio:device0/irq_state
+
+	chmod 0660 /sys/class/meizu/acc/acc_self_test
+	chmod 0660 /sys/class/meizu/acc/acc_x_calibbias
+	chmod 0660 /sys/class/meizu/acc/acc_y_calibbias
+	chmod 0660 /sys/class/meizu/acc/acc_z_calibbias
+	chmod 0660 /sys/class/meizu/acc/acc_x_offset
+	chmod 0660 /sys/class/meizu/acc/acc_y_offset
+	chmod 0660 /sys/class/meizu/acc/acc_z_offset
+
+# als + ps node property
+    chmod 0660 /sys/class/meizu/ps/ps_wakeup_enable
+    chmod 0660 /sys/class/meizu/ps/ps_non_wakeup_enable
+    chown system system /sys/class/meizu/ps/ps_wakeup_enable
+    chown system system /sys/class/meizu/ps/ps_non_wakeup_enable
+
+# for Holster
+        chown system system /sys/devices/mx_tsp/cover_control
+        chown system system /sys/devices/platform/gpio-keys.0/key_hall_state
+	chown system system /sys/class/meizu/hall/key_hall_state
+	chmod 0664 /sys/class/meizu/hall/key_hall_state
+
+# for Gesture
+        chown system system /sys/devices/mx_tsp/gesture_control
+        chown system system /sys/devices/mx_tsp/gesture_data
+
+#FLYME:zhouyueguo@SHELL.FlymeBenchMarkMTK.Feature {@
+       chown system system /sys/power/power_mode
+       chmod 0660 /sys/power/power_mode
+#@}
+
+#
+# Connectivity related services (End)
+#
+
+#Start Daemon (Registry directories should already be present)
+service mobicore /system/bin/mcDriverDaemon -r /system/app/mcRegistry/020f0000000000000000000000000000.drbin -r /system/app/mcRegistry/05120000000000000000000000000000.drbin -r /system/app/mcRegistry/070b0000000000000000000000000000.drbin -r /system/app/mcRegistry/030b0000000000000000000000000000.drbin -r /system/app/mcRegistry/04020000000000000000000000000000.drbin
+    user system
+    group system
+    class core
+    oneshort
+#FLYME:suojingchao@SDK.Flyme Theme.Feature {@
+on fs
+    mkdir /data/font 0777 system system
+#@}
+
+#FLYME:fanjun@SHELL.HapticFeedback.Feature {@
+on init
+    chown system system /dev/tspdrv
+    chmod 0660 /dev/tspdrv
+
+    mkdir /dev/pipes 0771 system system
+    export VIBE_PIPE_PATH /dev/pipes
+
+# TouchSense Player Service
+service immvibed /system/bin/immvibed -p 99 -u 1000
+    class main
+    user root
+    group root
+    oneshot
+#@}

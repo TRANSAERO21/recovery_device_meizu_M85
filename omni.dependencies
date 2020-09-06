@@ -1,0 +1,8 @@
+[
+    {
+        "remote": "github",
+        "repository": "meizuosc/mx5",
+        "target_path": "kernel/meizu/M85",
+        "revision": "master"
+    }
+]
